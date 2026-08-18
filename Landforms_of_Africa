@@ -1,7 +1,7 @@
 import folium
 import pandas as pd
 
-# Dataset based on the 8 African Physical Regions from your table
+# Complete descriptive dataset for all 8 African physical regions
 data = {
     "Name": [
         "1. Atlas Mountains", 
@@ -35,23 +35,23 @@ data = {
 
 df = pd.DataFrame(data)
 
-# Initialize map centered cleanly over Africa with NO default tiles
+# Initialize map canvas centered over the African continent with no baseline vectors
 m = folium.Map(
     location=[2.0, 20.0], 
     zoom_start=3.5,
     tiles=None
 )
 
-# Inject OpenTopoMap style layout for terrain visibility without roads or major labels
+# OpenTopoMap layer configuration (pure physical terrain boundaries)
 folium.TileLayer(
     tiles="https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png",
-    attr='Map data: &copy; <a href="https://openstreetmap.org">OpenStreetMap</a> contributors, SRTM | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a>',
+    attr='Map data &copy; OpenStreetMap, SRTM | Style &copy; OpenTopoMap',
     name="Topographic Physical Terrain",
     overlay=False,
     control=False
 ).add_to(m)
 
-# Color scheme to map out each of the 4 parent Major Landform Regions
+# Major category color keys
 color_map = {
     "African Alpine System": "purple",
     "African Massif": "orange",
@@ -59,7 +59,7 @@ color_map = {
     "Southern Africa Platform": "darkblue"
 }
 
-# Group layers by their parent Landform Region to act as an interactive legend
+# Distribute markers into interactive toggle clusters
 groups = {
     "African Alpine System": folium.FeatureGroup(name="1. African Alpine System (Purple)").add_to(m),
     "African Massif": folium.FeatureGroup(name="2. African Massif (Orange)").add_to(m),
@@ -67,12 +67,10 @@ groups = {
     "Southern Africa Platform": folium.FeatureGroup(name="4. Southern Africa Platform (Blue)").add_to(m)
 }
 
-# Populate the map markers
+# Loop and build nodes
 for _, row in df.iterrows():
     popup_html = f"<div style='font-family: Arial; min-width: 220px;'><h3>{row['Name']}</h3><p style='color:#555;'><b>Category:</b> {row['Major_Region']}</p><hr><p>{row['Description']}</p></div>"
-    
-    # Custom icon shapes to emphasize topographic points
-    icon_type = "star" if row["Major_Region"] == "East African Highlands & Rift" or row["Major_Region"] == "African Alpine System" else "info-sign"
+    icon_type = "star" if row["Major_Region"] in ["East African Highlands & Rift", "African Alpine System"] else "info-sign"
     
     folium.Marker(
         location=[row["Latitude"], row["Longitude"]],
@@ -81,10 +79,9 @@ for _, row in df.iterrows():
         tooltip=row["Name"]
     ).add_to(groups[row["Major_Region"]])
 
-# Display the layer filter legend control in the top-right corner
 folium.LayerControl(collapsed=False).add_to(m)
 
-# Build a clean HTML dropdown menu script to handle smooth camera flying transitions
+# Custom flight navigation bar
 dropdown_html = """
 <div style="position: fixed; top: 10px; left: 50px; z-index: 9999; background: white; padding: 10px; border-radius: 5px; border: 1px solid #ccc; max-height: 400px; overflow-y: auto;">
     <label for="flyto" style="font-weight: bold; font-family: Arial; font-size: 13px;">Fly to Physical Region: </label>
@@ -92,16 +89,13 @@ dropdown_html = """
         <option value="2,20" data-zoom="3.5">Full Continent View</option>
 """
 
-# Sort values by Parent Region, then Sub-region name to keep the selection index beautifully organized
 df_sorted = df.sort_values(by=["Major_Region", "Name"])
-
 current_parent = ""
 for _, row in df_sorted.iterrows():
     if row["Major_Region"] != current_parent:
         current_parent = row["Major_Region"]
         dropdown_html += f'        <option disabled style="background-color: #eee; font-weight: bold;">--- {current_parent} ---</option>\n'
     
-    # Choose smart zoom windows based on the scope of the physical region
     zoom_depth = "4" if row["Name"] in ["2. The Sahara", "3. The Sahel", "4. The Savanna"] else "5"
     dropdown_html += f'        <option value="{row["Latitude"]},{row["Longitude"]}" data-zoom="{zoom_depth}">{row["Name"]}</option>\n'
 
@@ -116,14 +110,8 @@ dropdown_html += """
 </script>
 """
 
-# Inject the dropdown widget onto the master map interface
 m.get_root().html.add_child(folium.Element(dropdown_html))
 
-# Save output locally
-output_file = "africa_topography_regions.html"
-m.save(output_file)
-
-print(f"Success! Topographic physical region map saved as '{output_file}'")
-
-# Render inside Jupyter / active python notebook session
-m
+# SAVE WITH EXHAUSTIVE SERVER INDEX PATHING CONFIGURATION
+m.save("index.html")
+print("Success! Your code index.html dashboard file is compiled and ready for GitHub Pages upload.")
