@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    
+        <script>
+            L_NO_TOUCH = false;
+            L_DISABLE_3D = false;
+        </script>
+    
+    <style>html, body {width: 100%;height: 100%;margin: 0;padding: 0;}</style>
+    <style>#map {position:absolute;top:0;bottom:0;right:0;left:0;}</style>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_b5099cd3287e0d2ff9915102db599c10 {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+        
+</head>
+<body>
+    
+    
+<div style="position: fixed; top: 10px; left: 50px; z-index: 9999; background: white; padding: 10px; border-radius: 5px; border: 1px solid #ccc; max-height: 400px; overflow-y: auto;">
+    <label for="flyto" style="font-weight: bold; font-family: Arial; font-size: 13px;">Fly to Physical Region: </label>
+    <select id="flyto" onchange="window.map_instance.flyTo(this.value.split(','), this.options[this.selectedIndex].getAttribute('data-zoom'));" style="padding: 5px; font-family: Arial;">
+        <option value="2,20" data-zoom="3.5">Full Continent View</option>
+        <option disabled style="background-color: #eee; font-weight: bold;">--- African Alpine System ---</option>
+        <option value="31.0667,-7.9167" data-zoom="5">1. Atlas Mountains</option>
+        <option disabled style="background-color: #eee; font-weight: bold;">--- African Massif ---</option>
+        <option value="23.0,12.0" data-zoom="5">2. The Sahara Desert</option>
+        <option value="15.0,15.0" data-zoom="4">3. The Sahel</option>
+        <option value="2.0,25.0" data-zoom="4">4. The Savanna</option>
+        <option value="-1.0,22.0" data-zoom="5">5. The Tropical Rainforest</option>
+        <option disabled style="background-color: #eee; font-weight: bold;">--- East African Highlands & Rift ---</option>
+        <option value="-3.0,35.0" data-zoom="5">6. The Rift Valley & Great Lakes</option>
+        <option value="10.0,39.0" data-zoom="5">7. Ethiopian & Eritrean Highlands</option>
+        <option disabled style="background-color: #eee; font-weight: bold;">--- Southern Africa Platform ---</option>
+        <option value="-25.0,22.0" data-zoom="5">8. Southern Africa Systems</option>
+
+    </select>
+</div>
+<script>
+    window.addEventListener('DOMContentLoaded', (event) => {
+        var maps = Object.keys(window).filter(k => k.startsWith('map_'));
+        if(maps.length > 0) { window.map_instance = window[maps]; }
+    });
+</script>
+    
+            <div class="folium-map" id="map_b5099cd3287e0d2ff9915102db599c10" ></div>
+        
+</body>
+<script>
+    
+    
+            var map_b5099cd3287e0d2ff9915102db599c10 = L.map(
+                "map_b5099cd3287e0d2ff9915102db599c10",
+                {
+                    center: [2.0, 20.0],
+                    crs: L.CRS.EPSG3857,
+                    zoom: 3.5,
+                    zoomControl: true,
+                    preferCanvas: false,
+                }
+            );
+
+            
+
+        
+    
+            var tile_layer_78287a593e42c54166af60d6fa22fa51 = L.tileLayer(
+                "https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png",
+                {"attribution": "Map data \u0026copy; OpenStreetMap, SRTM | Style \u0026copy; OpenTopoMap", "detectRetina": false, "maxZoom": 18, "minZoom": 0, "noWrap": false, "opacity": 1, "subdomains": "abc", "tms": false}
+            );
+        
+    
+            tile_layer_78287a593e42c54166af60d6fa22fa51.addTo(map_b5099cd3287e0d2ff9915102db599c10);
+        
+    
+            var feature_group_428936eeab68d43b44f1fa74de96d3f8 = L.featureGroup(
+                {}
+            );
+        
+    
+            var marker_ea058e39a9aa6000ff8ee93720612dbb = L.marker(
+                [31.0667, -7.9167],
+                {}
+            ).addTo(feature_group_428936eeab68d43b44f1fa74de96d3f8);
+        
+    
+            var icon_71a0109d2dc9ef44798393cd2ac7b003 = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "star", "iconColor": "white", "markerColor": "purple", "prefix": "glyphicon"}
+            );
+            marker_ea058e39a9aa6000ff8ee93720612dbb.setIcon(icon_71a0109d2dc9ef44798393cd2ac7b003);
+        
+    
+        var popup_4f2529a6126682bea0ee464ac2f1b4f5 = L.popup({"maxWidth": 350});
+
+        
+            
+                var html_2d714e55c3c8c7e700dd7dc103eb03c6 = $(`<div id="html_2d714e55c3c8c7e700dd7dc103eb03c6" style="width: 100.0%; height: 100.0%;"><div style='font-family: Arial; min-width: 220px;'><h3>1. Atlas Mountains</h3><p style='color:#555;'><b>Category:</b> African Alpine System</p><hr><p><b>Region: Atlas Mountains</b><br>The only folded mountain system in Africa, formed by tectonic collisions between the African and Eurasian plates. It separates the humid northern coastlines from the harsh Sahara Desert.</p></div></div>`)[0];
+                popup_4f2529a6126682bea0ee464ac2f1b4f5.setContent(html_2d714e55c3c8c7e700dd7dc103eb03c6);
+            
+        
+
+        marker_ea058e39a9aa6000ff8ee93720612dbb.bindPopup(popup_4f2529a6126682bea0ee464ac2f1b4f5)
+        ;
+
+        
+    
+    
+            marker_ea058e39a9aa6000ff8ee93720612dbb.bindTooltip(
+                `<div>
+                     1. Atlas Mountains
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            feature_group_428936eeab68d43b44f1fa74de96d3f8.addTo(map_b5099cd3287e0d2ff9915102db599c10);
+        
+    
+            var feature_group_8aeba286c3709ece0dc4722fad0aef7f = L.featureGroup(
+                {}
+            );
+        
+    
+            var marker_e9959afd88d06450102b7d6172c501c5 = L.marker(
+                [23.0, 12.0],
+                {}
+            ).addTo(feature_group_8aeba286c3709ece0dc4722fad0aef7f);
+        
+    
+            var icon_1364b5d92872737c45826cd75bff27ce = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "info-sign", "iconColor": "white", "markerColor": "orange", "prefix": "glyphicon"}
+            );
+            marker_e9959afd88d06450102b7d6172c501c5.setIcon(icon_1364b5d92872737c45826cd75bff27ce);
+        
+    
+        var popup_c775b4e730e4c0af44a95ebff64e3697 = L.popup({"maxWidth": 350});
+
+        
+            
+                var html_78558070953fd03783e0789d88b2b370 = $(`<div id="html_78558070953fd03783e0789d88b2b370" style="width: 100.0%; height: 100.0%;"><div style='font-family: Arial; min-width: 220px;'><h3>2. The Sahara Desert</h3><p style='color:#555;'><b>Category:</b> African Massif</p><hr><p><b>Region: The Sahara</b><br>The world's largest hot desert, spanning nearly one-third of the continent. Characterized by vast sand seas (ergs), stone plateaus, and hyper-arid conditions.</p></div></div>`)[0];
+                popup_c775b4e730e4c0af44a95ebff64e3697.setContent(html_78558070953fd03783e0789d88b2b370);
+            
+        
+
+        marker_e9959afd88d06450102b7d6172c501c5.bindPopup(popup_c775b4e730e4c0af44a95ebff64e3697)
+        ;
+
+        
+    
+    
+            marker_e9959afd88d06450102b7d6172c501c5.bindTooltip(
+                `<div>
+                     2. The Sahara Desert
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var marker_8f9f703d53279263a2a536e38d0c3df4 = L.marker(
+                [15.0, 15.0],
+                {}
+            ).addTo(feature_group_8aeba286c3709ece0dc4722fad0aef7f);
+        
+    
+            var icon_39a3e4683ef1a54cb595880df1ff2c16 = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "info-sign", "iconColor": "white", "markerColor": "orange", "prefix": "glyphicon"}
+            );
+            marker_8f9f703d53279263a2a536e38d0c3df4.setIcon(icon_39a3e4683ef1a54cb595880df1ff2c16);
+        
+    
+        var popup_2eaeb89a443bc2d0349513e8e8f2283f = L.popup({"maxWidth": 350});
+
+        
+            
+                var html_786eee81fe5691e61b355d6820a215fa = $(`<div id="html_786eee81fe5691e61b355d6820a215fa" style="width: 100.0%; height: 100.0%;"><div style='font-family: Arial; min-width: 220px;'><h3>3. The Sahel</h3><p style='color:#555;'><b>Category:</b> African Massif</p><hr><p><b>Region: The Sahel</b><br>A semi-arid transitional belt of flat grasslands and scrub savannas separating the dry Sahara Desert to the north from the wetter tropical regions to the south.</p></div></div>`)[0];
+                popup_2eaeb89a443bc2d0349513e8e8f2283f.setContent(html_786eee81fe5691e61b355d6820a215fa);
+            
+        
+
+        marker_8f9f703d53279263a2a536e38d0c3df4.bindPopup(popup_2eaeb89a443bc2d0349513e8e8f2283f)
+        ;
+
+        
+    
+    
+            marker_8f9f703d53279263a2a536e38d0c3df4.bindTooltip(
+                `<div>
+                     3. The Sahel
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var marker_fd5f57e41465d66e6e2b3c1d3dca9465 = L.marker(
+                [2.0, 25.0],
+                {}
+            ).addTo(feature_group_8aeba286c3709ece0dc4722fad0aef7f);
+        
+    
+            var icon_3dc209fbbf76e82385c747c496b9bd2d = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "info-sign", "iconColor": "white", "markerColor": "orange", "prefix": "glyphicon"}
+            );
+            marker_fd5f57e41465d66e6e2b3c1d3dca9465.setIcon(icon_3dc209fbbf76e82385c747c496b9bd2d);
+        
+    
+        var popup_ea3eca333a6f351f5b3ccccbf8c1eee8 = L.popup({"maxWidth": 350});
+
+        
+            
+                var html_fd032aa2faeb3c0a728497eaf6be1d9c = $(`<div id="html_fd032aa2faeb3c0a728497eaf6be1d9c" style="width: 100.0%; height: 100.0%;"><div style='font-family: Arial; min-width: 220px;'><h3>4. The Savanna</h3><p style='color:#555;'><b>Category:</b> African Massif</p><hr><p><b>Region: The Savanna</b><br>A vast tropical grassland ecosystem featuring distinct wet and dry seasons. It supports the world's most diverse communities of large herbivorous mammals and predators.</p></div></div>`)[0];
+                popup_ea3eca333a6f351f5b3ccccbf8c1eee8.setContent(html_fd032aa2faeb3c0a728497eaf6be1d9c);
+            
+        
+
+        marker_fd5f57e41465d66e6e2b3c1d3dca9465.bindPopup(popup_ea3eca333a6f351f5b3ccccbf8c1eee8)
+        ;
+
+        
+    
+    
+            marker_fd5f57e41465d66e6e2b3c1d3dca9465.bindTooltip(
+                `<div>
+                     4. The Savanna
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var marker_cc4a596793a623ce2e03ac8c7a45e142 = L.marker(
+                [-1.0, 22.0],
+                {}
+            ).addTo(feature_group_8aeba286c3709ece0dc4722fad0aef7f);
+        
+    
+            var icon_d15cf1419f22b28d5567473c4a57c56c = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "info-sign", "iconColor": "white", "markerColor": "orange", "prefix": "glyphicon"}
+            );
+            marker_cc4a596793a623ce2e03ac8c7a45e142.setIcon(icon_d15cf1419f22b28d5567473c4a57c56c);
+        
+    
+        var popup_548ace9f5fc628545bfea1ce94010544 = L.popup({"maxWidth": 350});
+
+        
+            
+                var html_f909f03c7b683458e787b77d3f18f4e6 = $(`<div id="html_f909f03c7b683458e787b77d3f18f4e6" style="width: 100.0%; height: 100.0%;"><div style='font-family: Arial; min-width: 220px;'><h3>5. The Tropical Rainforest</h3><p style='color:#555;'><b>Category:</b> African Massif</p><hr><p><b>Region: The Tropical Rainforest</b><br>Centering around the massive Congo River Basin, this region features dense, multi-layered evergreen forests with immense biodiversity and heavy, year-round rainfall.</p></div></div>`)[0];
+                popup_548ace9f5fc628545bfea1ce94010544.setContent(html_f909f03c7b683458e787b77d3f18f4e6);
+            
+        
+
+        marker_cc4a596793a623ce2e03ac8c7a45e142.bindPopup(popup_548ace9f5fc628545bfea1ce94010544)
+        ;
+
+        
+    
+    
+            marker_cc4a596793a623ce2e03ac8c7a45e142.bindTooltip(
+                `<div>
+                     5. The Tropical Rainforest
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            feature_group_8aeba286c3709ece0dc4722fad0aef7f.addTo(map_b5099cd3287e0d2ff9915102db599c10);
+        
+    
+            var feature_group_fcd5460bf558225d5fc806bcf98a7013 = L.featureGroup(
+                {}
+            );
+        
+    
+            var marker_378893477a11f61487cf7af44805e44b = L.marker(
+                [-3.0, 35.0],
+                {}
+            ).addTo(feature_group_fcd5460bf558225d5fc806bcf98a7013);
+        
+    
+            var icon_e21285d8f354735b9da76cd8e9d38ef1 = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "star", "iconColor": "white", "markerColor": "red", "prefix": "glyphicon"}
+            );
+            marker_378893477a11f61487cf7af44805e44b.setIcon(icon_e21285d8f354735b9da76cd8e9d38ef1);
+        
+    
+        var popup_667dc070b00c03126c2cb01c234ec809 = L.popup({"maxWidth": 350});
+
+        
+            
+                var html_f72cfc2ec1a8f5e95b12d878969b78d9 = $(`<div id="html_f72cfc2ec1a8f5e95b12d878969b78d9" style="width: 100.0%; height: 100.0%;"><div style='font-family: Arial; min-width: 220px;'><h3>6. The Rift Valley & Great Lakes</h3><p style='color:#555;'><b>Category:</b> East African Highlands & Rift</p><hr><p><b>Region: The Rift Valley & African Great Lakes</b><br>A massive geological fracture system creating steep-sided valleys, active volcanoes, and deep, elongated lakes like Tanganyika, Malawi, and Victoria.</p></div></div>`)[0];
+                popup_667dc070b00c03126c2cb01c234ec809.setContent(html_f72cfc2ec1a8f5e95b12d878969b78d9);
+            
+        
+
+        marker_378893477a11f61487cf7af44805e44b.bindPopup(popup_667dc070b00c03126c2cb01c234ec809)
+        ;
+
+        
+    
+    
+            marker_378893477a11f61487cf7af44805e44b.bindTooltip(
+                `<div>
+                     6. The Rift Valley & Great Lakes
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var marker_1497d0c76342d49427745a9e6eeaf770 = L.marker(
+                [10.0, 39.0],
+                {}
+            ).addTo(feature_group_fcd5460bf558225d5fc806bcf98a7013);
+        
+    
+            var icon_53400012d92bb52c4965d4a693f49a9a = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "star", "iconColor": "white", "markerColor": "red", "prefix": "glyphicon"}
+            );
+            marker_1497d0c76342d49427745a9e6eeaf770.setIcon(icon_53400012d92bb52c4965d4a693f49a9a);
+        
+    
+        var popup_531c3e3854eba0eadcac92fb8166a47a = L.popup({"maxWidth": 350});
+
+        
+            
+                var html_b0118b5d63d7e0f29579763ffde5ec6e = $(`<div id="html_b0118b5d63d7e0f29579763ffde5ec6e" style="width: 100.0%; height: 100.0%;"><div style='font-family: Arial; min-width: 220px;'><h3>7. Ethiopian & Eritrean Highlands</h3><p style='color:#555;'><b>Category:</b> East African Highlands & Rift</p><hr><p><b>Region: The Ethiopian & Eritrean Highlands</b><br>Known as the 'Roof of Africa,' this massive, rugged basaltic plateau reaches elevations over 4,000 meters and acts as a major water tower supplying the Nile river system.</p></div></div>`)[0];
+                popup_531c3e3854eba0eadcac92fb8166a47a.setContent(html_b0118b5d63d7e0f29579763ffde5ec6e);
+            
+        
+
+        marker_1497d0c76342d49427745a9e6eeaf770.bindPopup(popup_531c3e3854eba0eadcac92fb8166a47a)
+        ;
+
+        
+    
+    
+            marker_1497d0c76342d49427745a9e6eeaf770.bindTooltip(
+                `<div>
+                     7. Ethiopian & Eritrean Highlands
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            feature_group_fcd5460bf558225d5fc806bcf98a7013.addTo(map_b5099cd3287e0d2ff9915102db599c10);
+        
+    
+            var feature_group_cc61198a346cba35968dd1158a70ad28 = L.featureGroup(
+                {}
+            );
+        
+    
+            var marker_a07059f7e54863324067ec4d4a021d3b = L.marker(
+                [-25.0, 22.0],
+                {}
+            ).addTo(feature_group_cc61198a346cba35968dd1158a70ad28);
+        
+    
+            var icon_aaf7880798bf85ee22aae65953fd68e6 = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "info-sign", "iconColor": "white", "markerColor": "darkblue", "prefix": "glyphicon"}
+            );
+            marker_a07059f7e54863324067ec4d4a021d3b.setIcon(icon_aaf7880798bf85ee22aae65953fd68e6);
+        
+    
+        var popup_9d6f9ad00f92411131c4be8f655767f8 = L.popup({"maxWidth": 350});
+
+        
+            
+                var html_b190fa886c6e2cb7619001135db9046f = $(`<div id="html_b190fa886c6e2cb7619001135db9046f" style="width: 100.0%; height: 100.0%;"><div style='font-family: Arial; min-width: 220px;'><h3>8. Southern Africa Systems</h3><p style='color:#555;'><b>Category:</b> Southern Africa Platform</p><hr><p><b>Region: Southern Africa Platform</b><br>An elevated plateau region bounded by the Drakensberg mountain escarpment, containing unique arid and hyper-arid zones like the Kalahari and Namib Deserts.</p></div></div>`)[0];
+                popup_9d6f9ad00f92411131c4be8f655767f8.setContent(html_b190fa886c6e2cb7619001135db9046f);
+            
+        
+
+        marker_a07059f7e54863324067ec4d4a021d3b.bindPopup(popup_9d6f9ad00f92411131c4be8f655767f8)
+        ;
+
+        
+    
+    
+            marker_a07059f7e54863324067ec4d4a021d3b.bindTooltip(
+                `<div>
+                     8. Southern Africa Systems
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            feature_group_cc61198a346cba35968dd1158a70ad28.addTo(map_b5099cd3287e0d2ff9915102db599c10);
+        
+    
+            var layer_control_127ec82fc2429e914f28461f7ae4d1c5_layers = {
+                base_layers : {
+                },
+                overlays :  {
+                    "1. African Alpine System (Purple)" : feature_group_428936eeab68d43b44f1fa74de96d3f8,
+                    "2. African Massif (Orange)" : feature_group_8aeba286c3709ece0dc4722fad0aef7f,
+                    "3. East African Highlands \u0026 Rift (Red)" : feature_group_fcd5460bf558225d5fc806bcf98a7013,
+                    "4. Southern Africa Platform (Blue)" : feature_group_cc61198a346cba35968dd1158a70ad28,
+                },
+            };
+            let layer_control_127ec82fc2429e914f28461f7ae4d1c5 = L.control.layers(
+                layer_control_127ec82fc2429e914f28461f7ae4d1c5_layers.base_layers,
+                layer_control_127ec82fc2429e914f28461f7ae4d1c5_layers.overlays,
+                {"autoZIndex": true, "collapsed": false, "position": "topright"}
+            ).addTo(map_b5099cd3287e0d2ff9915102db599c10);
+
+        
+</script>
+</html>
