@@ -1,0 +1,129 @@
+import folium
+import pandas as pd
+
+# Dataset based on the 8 African Physical Regions from your table
+data = {
+    "Name": [
+        "1. Atlas Mountains", 
+        "2. The Sahara", 
+        "3. The Sahel", 
+        "4. The Savanna", 
+        "5. The Tropical Rainforest", 
+        "6. The Rift Valley & Great Lakes", 
+        "7. Ethiopian & Eritrean Highlands", 
+        "8. Southern Africa Systems"
+    ],
+    "Latitude": [31.0667, 23.0000, 15.0000, 2.0000, -1.0000, -3.0000, 10.0000, -25.0000],
+    "Longitude": [-7.9167, 12.0000, 15.0000, 25.0000, 22.0000, 35.0000, 39.0000, 22.0000],
+    "Major_Region": [
+        "African Alpine System", 
+        "African Massif", "African Massif", "African Massif", "African Massif",
+        "East African Highlands & Rift", "East African Highlands & Rift",
+        "Southern Africa Platform"
+    ],
+    "Description": [
+        "<b>Region: Atlas Mountains</b><br>The only folded mountain system in Africa, formed by tectonic collisions between the African and Eurasian plates. It separates the humid northern coastlines from the harsh Sahara Desert.",
+        "<b>Region: The Sahara</b><br>The world's largest hot desert, spanning nearly one-third of the continent. Characterized by vast sand seas (ergs), stone plateaus, and hyper-arid conditions.",
+        "<b>Region: The Sahel</b><br>A semi-arid transitional belt of flat grasslands and scrub savannas separating the dry Sahara Desert to the north from the wetter tropical regions to the south.",
+        "<b>Region: The Savanna</b><br>A vast tropical grassland ecosystem featuring distinct wet and dry seasons. It supports the world's most diverse communities of large herbivorous mammals and predators.",
+        "<b>Region: The Tropical Rainforest</b><br>Centering around the massive Congo River Basin, this region features dense, multi-layered evergreen forests with immense biodiversity and heavy, year-round rainfall.",
+        "<b>Region: The Rift Valley & African Great Lakes</b><br>A massive geological fracture system creating steep-sided valleys, active volcanoes, and deep, elongated lakes like Tanganyika, Malawi, and Victoria.",
+        "<b>Region: The Ethiopian & Eritrean Highlands</b><br>Known as the 'Roof of Africa,' this massive, rugged basaltic plateau reaches elevations over 4,000 meters and acts as a major water tower supplying the Nile river system.",
+        "<b>Region: Southern Africa Platform</b><br>An elevated plateau region bounded by the Drakensberg mountain escarpment, containing unique arid and hyper-arid zones like the Kalahari and Namib Deserts."
+    ]
+}
+
+df = pd.DataFrame(data)
+
+# Initialize map centered cleanly over Africa with NO default tiles
+m = folium.Map(
+    location=[2.0, 20.0], 
+    zoom_start=3.5,
+    tiles=None
+)
+
+# Inject OpenTopoMap style layout for terrain visibility without roads or major labels
+folium.TileLayer(
+    tiles="https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png",
+    attr='Map data: &copy; <a href="https://openstreetmap.org">OpenStreetMap</a> contributors, SRTM | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a>',
+    name="Topographic Physical Terrain",
+    overlay=False,
+    control=False
+).add_to(m)
+
+# Color scheme to map out each of the 4 parent Major Landform Regions
+color_map = {
+    "African Alpine System": "purple",
+    "African Massif": "orange",
+    "East African Highlands & Rift": "red",
+    "Southern Africa Platform": "darkblue"
+}
+
+# Group layers by their parent Landform Region to act as an interactive legend
+groups = {
+    "African Alpine System": folium.FeatureGroup(name="1. African Alpine System (Purple)").add_to(m),
+    "African Massif": folium.FeatureGroup(name="2. African Massif (Orange)").add_to(m),
+    "East African Highlands & Rift": folium.FeatureGroup(name="3. East African Highlands & Rift (Red)").add_to(m),
+    "Southern Africa Platform": folium.FeatureGroup(name="4. Southern Africa Platform (Blue)").add_to(m)
+}
+
+# Populate the map markers
+for _, row in df.iterrows():
+    popup_html = f"<div style='font-family: Arial; min-width: 220px;'><h3>{row['Name']}</h3><p style='color:#555;'><b>Category:</b> {row['Major_Region']}</p><hr><p>{row['Description']}</p></div>"
+    
+    # Custom icon shapes to emphasize topographic points
+    icon_type = "star" if row["Major_Region"] == "East African Highlands & Rift" or row["Major_Region"] == "African Alpine System" else "info-sign"
+    
+    folium.Marker(
+        location=[row["Latitude"], row["Longitude"]],
+        popup=folium.Popup(popup_html, max_width=350),
+        icon=folium.Icon(color=color_map[row["Major_Region"]], icon=icon_type),
+        tooltip=row["Name"]
+    ).add_to(groups[row["Major_Region"]])
+
+# Display the layer filter legend control in the top-right corner
+folium.LayerControl(collapsed=False).add_to(m)
+
+# Build a clean HTML dropdown menu script to handle smooth camera flying transitions
+dropdown_html = """
+<div style="position: fixed; top: 10px; left: 50px; z-index: 9999; background: white; padding: 10px; border-radius: 5px; border: 1px solid #ccc; max-height: 400px; overflow-y: auto;">
+    <label for="flyto" style="font-weight: bold; font-family: Arial; font-size: 13px;">Fly to Physical Region: </label>
+    <select id="flyto" onchange="window.map_instance.flyTo(this.value.split(','), this.options[this.selectedIndex].getAttribute('data-zoom'));" style="padding: 5px; font-family: Arial;">
+        <option value="2,20" data-zoom="3.5">Full Continent View</option>
+"""
+
+# Sort values by Parent Region, then Sub-region name to keep the selection index beautifully organized
+df_sorted = df.sort_values(by=["Major_Region", "Name"])
+
+current_parent = ""
+for _, row in df_sorted.iterrows():
+    if row["Major_Region"] != current_parent:
+        current_parent = row["Major_Region"]
+        dropdown_html += f'        <option disabled style="background-color: #eee; font-weight: bold;">--- {current_parent} ---</option>\n'
+    
+    # Choose smart zoom windows based on the scope of the physical region
+    zoom_depth = "4" if row["Name"] in ["2. The Sahara", "3. The Sahel", "4. The Savanna"] else "5"
+    dropdown_html += f'        <option value="{row["Latitude"]},{row["Longitude"]}" data-zoom="{zoom_depth}">{row["Name"]}</option>\n'
+
+dropdown_html += """
+    </select>
+</div>
+<script>
+    window.addEventListener('DOMContentLoaded', (event) => {
+        var maps = Object.keys(window).filter(k => k.startsWith('map_'));
+        if(maps.length > 0) { window.map_instance = window[maps]; }
+    });
+</script>
+"""
+
+# Inject the dropdown widget onto the master map interface
+m.get_root().html.add_child(folium.Element(dropdown_html))
+
+# Save output locally
+output_file = "africa_topography_regions.html"
+m.save(output_file)
+
+print(f"Success! Topographic physical region map saved as '{output_file}'")
+
+# Render inside Jupyter / active python notebook session
+m
