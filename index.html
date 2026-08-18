@@ -1,1 +1,148 @@
-<!-- Real Map Placeholder --><html><body><h1>Interactive Africa Topography Map</h1></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Africa Physical Regions Map</title>
+    
+    <!-- Include Leaflet CSS and JS directly from open-source networks -->
+    <link rel="stylesheet" href="https://unpkg.com" />
+    <script src="https://unpkg.com"></script>
+
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+            font-family: Arial, sans-serif;
+        }
+        #map {
+            height: 100%;
+            width: 100%;
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            z-index: 1;
+        }
+        .control-panel {
+            position: fixed;
+            top: 15px;
+            left: 55px;
+            z-index: 9999;
+            background: white;
+            padding: 12px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+            max-height: 80%;
+            overflow-y: auto;
+        }
+        .control-panel label {
+            font-weight: bold;
+            font-size: 13px;
+            display: block;
+            margin-bottom: 5px;
+        }
+        .control-panel select {
+            padding: 6px;
+            font-size: 13px;
+            border-radius: 4px;
+            border: 1px solid #aaa;
+            width: 220px;
+        }
+        .popup-box h3 {
+            margin: 0 0 5px 0;
+            color: #222;
+        }
+        .popup-box p {
+            margin: 5px 0;
+            font-size: 13px;
+            line-height: 1.4;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Dropdown Control Window -->
+    <div class="control-panel">
+        <label for="flyto">Fly to Physical Region:</label>
+        <select id="flyto" onchange="flyToLocation(this.value, this.options[this.selectedIndex].getAttribute('data-zoom'))">
+            <option value="2.0,20.0" data-zoom="3.5">Full Continent View</option>
+            
+            <option disabled style="background-color: #eee; font-weight: bold;">--- African Alpine System ---</option>
+            <option value="31.0667,-7.9167" data-zoom="5">1. Atlas Mountains</option>
+            
+            <option disabled style="background-color: #eee; font-weight: bold;">--- African Massif ---</option>
+            <option value="23.0000,12.0000" data-zoom="4">2. The Sahara</option>
+            <option value="15.0000,15.0000" data-zoom="4">3. The Sahel</option>
+            <option value="2.0000,25.0000" data-zoom="4">4. The Savanna</option>
+            <option value="-1.0000,22.0000" data-zoom="5">5. The Tropical Rainforest</option>
+            
+            <option disabled style="background-color: #eee; font-weight: bold;">--- East African Highlands & Rift ---</option>
+            <option value="-3.0000,35.0000" data-zoom="5">6. The Rift Valley & Great Lakes</option>
+            <option value="10.0000,39.0000" data-zoom="6">7. Ethiopian & Eritrean Highlands</option>
+            
+            <option disabled style="background-color: #eee; font-weight: bold;">--- Southern Africa Platform ---</option>
+            <option value="-25.0000,22.0000" data-zoom="5">8. Southern Africa Systems</option>
+        </select>
+    </div>
+
+    <!-- The Map Container Grid Element -->
+    <div id="map"></div>
+
+    <script>
+        // 1. Initialize Leaflet Map Instance centered cleanly over Africa
+        var map = L.map('map', {
+            center: [2.0, 20.0],
+            zoom: 3.5,
+            zoomControl: true
+        });
+
+        // 2. Load the OpenTopoMap Base Layer (No political borders, gorgeous physical terrain)
+        L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+            maxZoom: 17,
+            attribution: 'Map data &copy; OpenStreetMap, SRTM | Style &copy; OpenTopoMap'
+        }).addTo(map);
+
+        // 3. Define the geographic data clusters for the 8 regions
+        var regions = [
+            { name: "1. Atlas Mountains", coords: [31.0667, -7.9167], color: "purple", desc: "The only folded mountain system in Africa, formed by tectonic collisions between the African and Eurasian plates. It separates the humid northern coastlines from the harsh Sahara Desert." },
+            { name: "2. The Sahara", coords: [23.0000, 12.0000], color: "orange", desc: "The world's largest hot desert, spanning nearly one-third of the continent. Characterized by vast sand seas (ergs), stone plateaus, and hyper-arid conditions." },
+            { name: "3. The Sahel", coords: [15.0000, 15.0000], color: "orange", desc: "A semi-arid transitional belt of flat grasslands and scrub savannas separating the dry Sahara Desert to the north from the wetter tropical regions to the south." },
+            { name: "4. The Savanna", coords: [2.0000, 25.0000], color: "orange", desc: "A vast tropical grassland ecosystem featuring distinct wet and dry seasons. It supports the world's most diverse communities of large herbivorous mammals and predators." },
+            { name: "5. The Tropical Rainforest", coords: [-1.0000, 22.0000], color: "orange", desc: "Centering around the massive Congo River Basin, this region features dense, multi-layered evergreen forests with immense biodiversity and heavy, year-round rainfall." },
+            { name: "6. The Rift Valley & Great Lakes", coords: [-3.0000, 35.0000], color: "red", desc: "A massive geological fracture system creating steep-sided valleys, active volcanoes, and deep, elongated lakes like Tanganyika, Malawi, and Victoria." },
+            { name: "7. Ethiopian & Eritrean Highlands", coords: [10.0000, 39.0000], color: "red", desc: "Known as the 'Roof of Africa,' this massive, rugged basaltic plateau reaches elevations over 4,000 meters and acts as a major water tower supplying the Nile river system." },
+            { name: "8. Southern Africa Systems", coords: [-25.0000, 22.0000], color: "blue", desc: "An elevated plateau region bounded by the Drakensberg mountain escarpment, containing unique arid and hyper-arid zones like the Kalahari and Namib Deserts." }
+        ];
+
+        // 4. Create custom colored marker dots and populate them onto the screen
+        regions.forEach(function(region) {
+            // Setup simple marker circle rings that match our category dashboard colors
+            var marker = L.circleMarker(region.coords, {
+                radius: 10,
+                fillColor: region.color,
+                color: "#fff",
+                weight: 2,
+                opacity: 1,
+                fillOpacity: 0.85
+            }).addTo(map);
+
+            // Bind detailed descriptions to pop up on user clicks
+            var popupContent = "<div class='popup-box'><h3>" + region.name + "</h3><hr><p>" + region.desc + "</p></div>";
+            marker.bindPopup(popupContent, { maxWidth: 320 });
+            marker.bindTooltip(region.name);
+        });
+
+        // 5. JavaScript function to handle smooth window movement from the dropdown selector
+        function flyToLocation(coordsStr, zoomLevel) {
+            var coords = coordsStr.split(',').map(Number);
+            map.flyTo(coords, parseFloat(zoomLevel), {
+                animate: true,
+                duration: 1.5
+            });
+        }
+    </script>
+</body>
+</html>
